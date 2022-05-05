@@ -1,10 +1,11 @@
 const path = require("path");
 const Dotenv = require('dotenv-webpack');
 const webpack = require('webpack');
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: "development",
-  entry: "./src/index.jsx",
+  entry: ["regenerator-runtime/runtime.js", "./src/index.jsx"],
   output: {
     path: path.join(__dirname, 'public'),
     filename: "bundle.js"

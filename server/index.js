@@ -21,7 +21,7 @@ app.get('/flight/:flightId', (req, res) => {
         if ((flight.progress_percent > 0 && flight.progress_percent < 100) || flight.status.includes('En Route')) {
           console.log(flight.ident, '||', flight.status, '||', local)
           console.log(flight)
-          let flightObj = { airport: flight.destination.code_iata, gate: flight.estimated_in}
+          let flightObj = { airport: flight.destination.code_iata, gate: flight.estimated_in, origin: flight.origin.code_iata, terminal: flight.terminal_destination }
           return flightObj;
         } else if (flight.status.includes('Landed')) {
           console.log(flight.ident, '||', flight.status, '||', local)
@@ -47,6 +47,17 @@ app.get('/flight/:flightId', (req, res) => {
     })
     .catch(err => console.log(err, 'server'))
 });
+
+app.get('/airports/:airport', (req, res) => {
+  axios.get(`${process.env.FA_URL}/airports/${req.params.airport}`, {
+    headers: {
+      'x-apikey' : `${process.env.FA_KEY}`
+    }
+  })
+    .then(response => {
+      res.send(response.data)
+    })
+})
 
 app.get('/directions', (req, res) => {
   console.log(req.query)

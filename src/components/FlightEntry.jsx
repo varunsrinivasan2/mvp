@@ -9,7 +9,10 @@ const FlightEntry = () => {
   const [gateArrival, setGateArrival] = useState(null);
   const [until, setUntil] = useState(null);
   const [timeAtGate, setTimeAtGate] = useState(null);
+  const [origin, setOrigin] = useState('');
+  const [city, setCity] = useState('');
   const [airport, setAirport] = useState('');
+  const [terminal, setTerminal] = useState(null);
   const [unix, setUnix] = useState(null);
 
   const handleSubmit = (e) => {
@@ -26,8 +29,13 @@ const FlightEntry = () => {
     let gateTime;
     axios.get(`/flight/${capitalized}`)
       .then(res => {
-        console.log(res.data)
+        console.log(res.data);
+        axios.get(`/airports/${res.data.origin}`)
+          .then(res => setOrigin(res.data.city))
+        axios.get(`/airports/${res.data.airport}`)
+          .then(res => setCity(res.data.name))
         setAirport(res.data.airport)
+        setTerminal(res.data.terminal);
         if (typeof res.data.gate === 'number') {
           setUnix(res.data.gate);
           let minutes = Math.floor(res.data.gate / 1000 / 60);
@@ -62,7 +70,7 @@ const FlightEntry = () => {
       <input type="text" placeholder="e.g. 'UAL123'" value={flightInfo} onChange={e => setFlightInfo(e.target.value)}/>
       <input type="submit"/>
     </form>
-    {gateArrival && until && <><div>Flight {capital} will arrive at the gate at {airport} in {until} at {gateArrival}.</div><SearchLocationInput ap={airport} unix={unix}/></>}
+    {gateArrival && until && <><div>Flight {capital} from {origin} will arrive at the gate at {city} Terminal {terminal} in {until} ({gateArrival}).</div><SearchLocationInput ap={airport} unix={unix}/></>}
     {timeAtGate && <><div>Flight {capital} arrived at the gate {timeAtGate}.</div><SearchLocationInput ap={airport} unix={unix}/></>}
     </>
   )
